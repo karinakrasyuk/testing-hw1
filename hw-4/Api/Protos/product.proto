@@ -1,0 +1,107 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "API";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/struct.proto";
+
+package product;
+
+service ProductService {
+  rpc Add (AddProductRequest) returns (AddProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/products/add"
+      body: "*"
+    };
+  }
+  
+  rpc GetById (GetProductRequest) returns (Product) {
+    option (google.api.http) = {
+      get: "/v1/product/get"
+    };
+  }
+  
+  rpc UpdateCostById(UpdateCostRequest) returns (UpdateCostResponse) {
+    option (google.api.http) = {
+      put: "/v1/product/update"
+      body: "*"
+    };
+  }
+  
+  rpc GetProducts (GetProductsRequest) returns (ProductsResponse) {
+    option (google.api.http) = {
+      get: "/v1/products/get"
+    };
+  }
+}
+
+message AddProductRequest {
+  string name = 1;
+  double cost = 2;
+  double weight = 3;
+  ProductType product_type = 4;
+  google.protobuf.Timestamp creation_date = 5; 
+  int64 warehouse_id = 6;
+  
+}
+
+message AddProductResponse {
+  int64 id = 1;
+}
+
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  double cost = 3;
+  double weight = 4;
+  ProductType product_type = 5;
+  google.protobuf.Timestamp creation_date = 6;
+  int64 warehouse_id = 7;
+}
+
+enum ProductType {
+  GENERAL = 0;
+  HOUSEHOLD_CHEMICALS = 1;
+  APPLIANCES = 2;
+  PRODUCTS = 3;
+}
+
+message GetProductRequest {
+  int64 id = 1;
+}
+
+message UpdateCostRequest {
+  int64 id = 1;
+  double new_cost = 2;
+}
+
+message UpdateCostResponse {
+  Product product = 1;
+}
+
+message GetProductsRequest {
+  Filter filters = 1;
+  Pagination pages = 2;
+}
+
+message Filter {
+  google.protobuf.Timestamp creation_date = 1;
+  NullableProductType product_type = 2;
+  google.protobuf.Int64Value warehouse_id = 3;
+}
+
+message Pagination {
+  int32 page_number = 1;
+  int32 amount_per_page = 2;
+}
+
+message NullableProductType {
+  ProductType product_type = 1;
+}
+
+message ProductsResponse {
+  repeated Product product = 1;
+}
